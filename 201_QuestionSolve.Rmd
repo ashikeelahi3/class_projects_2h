@@ -61,7 +61,7 @@ abline(v=mu[1], lty=3)
 
 ```
 
-### Problem 2: Generate 1200 random samples of size n = 12 with $\mu = 4$ and $\sigma^2 = 9$. Suppose $s^2=\frac{1}{n-1}\sum_i^n (x_i - \bar{x})^2$. Using sitable graph, justify that $\frac{(n-1)s^2}{sigma^2}$ follows a chi-square distribution with (n-1) degress of freedom.
+### Problem 2: Generate 1200 random samples of size n = 12 with $\mu = 4$ and $\sigma^2 = 9$. Suppose $s^2=\frac{1}{n-1}\sum_i^n (x_i - \bar{x})^2$. Using sitable graph, justify that $\frac{(n-1)s^2}{\sigma^2}$ follows a chi-square distribution with (n-1) degress of freedom.
 
 ```{r}
 par(mfrow=c(1, 1))
