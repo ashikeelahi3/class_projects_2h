@@ -179,8 +179,8 @@ cdf_dis = function(x, a, b) {
   ifelse(x < a, 0, ifelse(x > b, 1, x / 10))
 }
 
-# cdf
-fr_n = function(x, a, b) {
+# pdf of order statistic
+fr_n = function(x, r, n, a, b) {
   cdf_x = cdf_dis(x, a, b)
   pdf_x = 0.1
   
@@ -193,4 +193,122 @@ a = 0
 b = 10
 r = 5
 n = 7
+
+moment_k <- function(k, r, n, a, b) {
+    integrand <- function(x) x^k * fr_n(x, r, n, a, b)
+    moment <- integrate(integrand, a, b)$value
+    moment
+}
+
+mean_x5 <- moment_k(1, r, n, a, b)
+var_x5 <- moment_k(2, r, n, a, b) - mean_x5^2
+
+
+cat("Mean of X_{(5)}:", mean_x5, "\n")
+cat("Variance of X_{(5)}:", var_x5, "\n")
+
+
+x_values = seq(a, b, length.out=100)
+Fr_n_values = array()
+for(i in 1:100) {
+  Fr_n_values[i] = integrate(fr_n, a, x_values[i], r=r, n=n, a=a,  b=b)$value 
+}
+
+plot(x_values, Fr_n_values, type = "l", xlab = "x->", ylab=paste0("F", r, ":", n, "(x)"))
 ```
+
+##### Problem 5 A random sample of size 3 is drawn from a population that has a uniform distribution on the interval (0, 1). The resulting order statistics are $X_{1:3}, X_{2:3}$ and $X_{3:3}$. Determine the mean and variance of smallest and largest order statistic.
+
+##### **Method 1:**
+
+```{r}
+
+# kth moment of rth order statistic  = (3!*(k+r-1)!) / ((r-1)! * (k+3)!)
+rm_uniform_order <- function(k, r) {
+  (factorial(3)*factorial(k+r-1)) / (factorial(r-1)*factorial(k+3))
+}
+
+mean_X_1.3 = rm_uniform_order(k = 1, r = 1)
+ var_X_1.3 = rm_uniform_order(k = 2, r = 1) - mean_X_1.3^2
+mean_X_3.3 = rm_uniform_order(k = 1, r = 3)
+ var_X_3.3 = rm_uniform_order(k = 2, r = 3) - mean_X_3.3^2
+ 
+mean_X_1.3
+var_X_1.3
+
+mean_X_3.3
+var_X_3.3
+```
+
+##### **Method 2**
+
+```{r}
+# kth moment of rth roder statistic when sample size is n
+# PI_i=1^k ((r+i) / (n+i))
+rm_uniform_order_n <- function(n, r, k) {
+  mult = 1
+  for(i in 1:k) {
+    term = (r+i-1) / (n+i)
+    mult = mult * term
+  }
+  return(mult)
+}
+mean_X_1.3 = rm_uniform_order_n(n = 3, r = 1, k = 1)
+ var_X_1.3 = rm_uniform_order_n(n = 3, r = 1, k = 2) - mean_X_1.3^2
+mean_X_3.3 = rm_uniform_order_n(n = 3, r = 3, k = 1)
+ var_X_3.3 = rm_uniform_order_n(n = 3, r = 3, k = 2) - mean_X_3.3^2
+ 
+mean_X_1.3
+var_X_1.3
+
+mean_X_3.3
+var_X_3.3
+```
+
+
+##### Problem 6: The random sample $X_1, X_2, ..., X_9$ of size 9 is drawn from a population that has a uniform distribution with the interval (0, 10). Evaluate the mean and variance of 7th order statistic.
+
+```{r}
+# cdf 
+cdf_uniform <- function (x, a, b) {
+    ifelse(x < a, 0, ifelse(x > b, 1, (x - a) / (b - a)))
+}
+
+# fr:n
+fr_n <- function (x, r, n, a, b) {
+    cdf_x <- cdf_uniform(x, a, b)
+    pdf_x <- 1 / (b - a)
+
+    numerator <- factorial(n) / (factorial(r-1)*factorial(n-r))
+    prob_dist <- numerator * cdf_x^(r-1) * (1 - cdf_x)^(n-r)*pdf_x
+    prob_dist
+}
+
+
+a <- 0
+b <- 10
+n <- 9
+r <- 7
+
+x_values <- seq(a, b, length.out=100)
+
+fr_n_values <- sapply(x_values, fr_n, r=r, n=n, a=a, b=b)
+
+plot(x_values, fr_n_values, type="l", ylim=c(0, max(fr_n_values)), xlab="x->", ylab=paste0("f", r, ":", n, "(x)"), main=paste0("Probability Density Function of Xr:n"))
+
+# int 2 to 10
+p_x7_gt_2 <- integrate(fr_n, 2, b, r=r, n=n, a=a, b=b)$value
+cat("P(X_{(7)} > 2):", p_x7_gt_2, "\n")
+
+moment_k <- function(k, r, n, a, b) {
+    integrand <- function(x) x^k * fr_n(x, r, n, a, b)
+    moment <- integrate(integrand, a, b)$value
+    moment
+}
+
+mean_x7 <- moment_k(1, r, n, a, b)
+var_x7 <- moment_k(2, r, n, a, b) - mean_x7^2
+
+
+cat("Mean of X_{(7)}:", mean_x7, "\n")
+cat("Variance of X_{(7)}:", var_x7, "\n")
