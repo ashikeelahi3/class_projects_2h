@@ -1,0 +1,241 @@
+---
+title: "R Programming Problems"
+author: "Ashik E Elahi"
+date: "2024-02-19"
+output: html_document
+---
+
+#### Problem 1:
+
+##### For a = 5, b = 15 and c = 10, find
+
+##### (i) $\frac{a+b}{c}$,
+
+##### (ii) $\frac{-b+\sqrt{b^2-4ac}}{2a}$,
+
+##### (iii) $ac+|c-b|$,
+
+##### (iv) $(2a-c)^2$
+
+```{r}
+a = 5; b = 15; c = 10
+# (i)
+(a+b)/c
+# (ii)
+(-b+sqrt(b^2 - 4*a*c)/ (2*a))
+# (iii)
+a*c + abs(c-b)
+# (iv)
+(2*a-c)^2
+```
+
+#### Problem 2
+
+##### (i) Create a data vector in R for 20, 13, 14, 25, 16, 20, 10, 9, 23, 35, 70, 12, 15, 13, 10. Manupulate the data vector by removing 70.
+
+##### (ii) Create a data vector in R which is 1 to 15.
+
+##### (iii) Create a data vector in R which 1 to 24 by 2.
+
+##### (iv) Create a following data matrix in R
+
+$$
+\begin{bmatrix}
+1 & 2 & 3 & 4\\
+5 & 6 & 7 & 8\\
+9 & 10 & 11 & 12
+\end{bmatrix}
+$$ Also find (a) row sum, (b) column sum, and (c) the element (2, 3) position.
+
+```{r}
+# (i) Removing element from data vector
+x <- c(20, 13, 14, 25, 16, 20, 10, 9, 23, 35, 70, 12, 15, 13, 10)
+x <- x[-11]
+print(x)
+
+#(ii) Data vector (1 to 15)
+x2 <- 1:15
+print(x2)
+
+#(iii) Data vector (1 to 24 by 2)
+x3 <- seq(1, 24, 2)
+print(x3)
+
+#(iv) Matrix 
+A <- matrix(1:12, nrow = 3, byrow = T)
+print(A)
+
+# (a) Row Sums 
+rowSums(A)
+# (b) Columns Sums
+colSums(A)
+# (c) Element at (2, 3) position 
+A[2, 3]
+```
+
+#### Problem 3
+
+##### (i) Create the following data matrix in R:
+
+$$ A =
+\begin{bmatrix}
+1 & 2 & 3\\
+5 & 6 & 7\\
+9 & 10 & 11
+\end{bmatrix}
+$$
+
+##### (a) Transpose of A.
+
+##### (b) Find the inverse of A, and
+
+##### (c) Eigen values of A
+
+##### (ii) Consider another matrix
+
+$$
+B = 
+\begin{bmatrix}
+7 & 4 & 1\\
+5 & 6 & 7\\
+2 & 7 & 3
+\end{bmatrix}
+$$
+
+##### (a) Find A + B, A - B
+
+##### (b) Find A x B
+
+```{r}
+# (i) First matrix 
+A <- matrix(1:12, 3, 4, T)
+A <- A[, -4]
+
+print(A)
+
+# (a) Transpose of A 
+t(A)
+
+# (b) Find the inverse of A
+# solve(A) ---->>> It shows an error
+
+# (c) Eigen values of A 
+eigen(A)
+
+# (ii) Second Matrix (B)
+B <- matrix(c(7, 5, 2, 4, 6, 7, 1, 7, 3), 3, 3)
+
+A + B
+A - B
+
+# (b) A*B
+A %*% B
+```
+
+#### Problem 4
+
+##### Consider the simple fictitious dataset that describe patient responses to two drugs at five dosage level as given below.
+
+| Dosage | Response to Drug A | Response to Drug B |
+|--------|--------------------|--------------------|
+| 20     | 16                 | 15                 |
+| 30     | 20                 | 18                 |
+| 40     | 27                 | 25                 |
+| 45     | 40                 | 31                 |
+| 60     | 60                 | 40                 |
+
+##### Plot response of the two drugs against dosage. [Add title, legend, text of axes, and set of a reference line at 30]
+
+
+```{r}
+
+```
+
+#### Problem 5
+##### (i) Use Newton's method for finding root: $f(x)=x^3+2x^2-7$
+##### (ii) Solve the quadratic equation $x^2+2x-7=0$ using if-else() and repeat()
+##### (iii) Write a function to compute n! and hence find 23!
+##### (iv) Compute coefficient of variance of the dataset c(5, 6, 2, 8, 5, 9, 2, 4, 8, 3, 1, 9)
+
+```{r}
+# (i) Newton's method for finding root
+f <- function(x) x^3 + 2*x^2 - 7
+f. <- function(x) 3*x^2 + 4*x
+
+
+calc_root <- function(x=1, tolerance = 0.0000001) {
+  while(abs(f(x)) > tolerance) {
+    x <- x - f(x) / f.(x)
+  }
+  return(x)
+}
+
+tolerance = 0.0000001
+calc_root(x=1, tolerance)
+
+# Solve the quadratic equation using if-else (x^2 + 2*x-7=0)
+a = 1; b = 2; c = -7
+root_1 = root_2 = NULL
+dis = b^2 - 4*a*c
+
+if(dis < 0) {
+  cat("Roots are imaginary\n")
+  dis = dis + 0i  # converting into complex form
+}
+
+root_1 = (-b + sqrt(dis))/(2*a)
+root_2 = (-b - sqrt(dis))/(2*a)
+
+cat("The roots are", round(root_1, 2), "and", round(root_2, 2), "\n")
+
+
+# Solve the function using repeat()
+g <- function(x) x^2  + 2*x - 7
+g. <- function(x) 2*x + 2
+calc_root2 <- function(x=1, tolerance = 0.0000001) {
+  repeat{
+    if(abs(g(x)) < tolerance) {
+      break
+    }
+    x <- x - g(x)/g.(x) 
+  }
+  return(x)
+}
+
+root_1 = calc_root2(x=1, tolerance)
+root_2 = calc_root2(x=-4, tolerance)
+
+cat("The roots are", round(root_1, 2), "and", round(root_2, 2), "\n")
+
+# (iv) Compute coefficient of variance
+y <- c(5, 6, 2, 8, 5, 9, 2, 4, 8, 3, 1, 9)
+
+cv = sd(y) / mean(y)
+cat("Coefficient of variation is ", cv)
+```
+
+#### Problem 6
+##### Access the default data file “stackloss” in R and fit a simple linear regression of stack.loss on Air.Flow and fitted regression line together and interpret.
+
+```{r}
+
+```
+
+#### Problem 7
+##### Access the default data file “stackloss” in R and fit a simple linear regression of stack.loss on Water.Temp and fitted regression line together and interpret.
+
+```{r}
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
