@@ -218,14 +218,28 @@ cat("Coefficient of variation is ", cv)
 ##### Access the default data file “stackloss” in R and fit a simple linear regression of stack.loss on Air.Flow and fitted regression line together and interpret.
 
 ```{r}
-
+head(stackloss)
+attach(stackloss)
+# stack.loss = a + b*Air.Flow
+fit1 <- lm(stack.loss ~ Air.Flow)
+fit1
+summary(fit1)
+plot(Air.Flow, stack.loss)
+lines(Air.Flow, fitted(fit1))
 ```
 
 #### Problem 7
 ##### Access the default data file “stackloss” in R and fit a simple linear regression of stack.loss on Water.Temp and fitted regression line together and interpret.
 
 ```{r}
-
+head(stackloss)
+attach(stackloss)
+# stack.loss = a + b*Water.Temp
+fit2 <- lm(stack.loss ~ Water.Temp)
+fit2
+summary(fit2)
+plot(Water.Temp, stack.loss)
+lines(Water.Temp, fitted(fit2))
 ```
 
 
