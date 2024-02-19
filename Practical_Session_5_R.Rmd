@@ -137,7 +137,7 @@ A %*% B
 ##### Consider the simple fictitious dataset that describe patient responses to two drugs at five dosage level as given below.
 
 | Dosage | Response to Drug A | Response to Drug B |
-|--------|--------------------|--------------------|
+|:-------|:-------------------|:-------------------|
 | 20     | 16                 | 15                 |
 | 30     | 20                 | 18                 |
 | 40     | 27                 | 25                 |
@@ -148,7 +148,16 @@ A %*% B
 
 
 ```{r}
+dosage <- c(20, 30, 40, 45, 60)
+drugA <- c(16, 20, 27, 40, 60)
+drugB <- c(15, 18, 25, 31, 40)
 
+plot(dosage, drugA, type="b", pch=15, lty=1, col="red",
+     ylim = c(0, 60), main = "Drug A vs. Drug B", 
+     xlab ="Drug Dosage", ylab = "Drug Response")
+lines(dosage, drugB, type = "b", pch=17, lty=2, col="blue")
+abline(h=c(30), lwd=1.5, lty=2, col="gray")
+legend("topleft", inset = 0.05, title = "Drug Type", c("A", "B"), lty=c(1, 2), col = c("red", "blue"), pch = c(15, 17))
 ```
 
 #### Problem 5
