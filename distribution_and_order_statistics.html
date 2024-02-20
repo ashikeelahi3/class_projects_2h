@@ -687,6 +687,73 @@ cat(&quot;Mean of X_{(7)}:&quot;, mean_x7, &quot;\n&quot;)</code></pre>
 <pre class="r"><code>cat(&quot;Variance of X_{(7)}:&quot;, var_x7, &quot;\n&quot;)</code></pre>
 <pre><code>## Variance of X_{(7)}: 1.909091</code></pre>
 </div>
+<div id="problem-7-a-random-sample-of-size-3-is-drawn-from-a-population-that-has-a-uniform-distribution-on-the-interval-0-1.-the-resulting-order-statistics-are-x_13-x_23-x_33.-determine-the-mean-and-variance-of-sample-range." class="section level5">
+<h5>Problem 7: A random sample of size 3 is drawn from a population that
+has a uniform distribution on the interval (0, 1). The resulting order
+statistics are <span class="math inline">\(X_{1:3}, X_{2:3},
+X_{3:3}\)</span>. Determine the mean and variance of sample range.</h5>
+<pre class="r"><code>fr_n = function(x, r, n, a, b) {
+  cdf_x = punif(x, min=a, max=b)
+  pdf_x = dunif(x, min=a, max=b)
+  
+  numerator &lt;- factorial(n) / (factorial(r-1)*factorial(n-r))
+    prob_dist &lt;- numerator * cdf_x^(r-1) * (1 - cdf_x)^(n-r)*pdf_x
+    prob_dist
+}
+
+x = seq(0, 1, length.out=100)
+
+a = 0
+b = 1
+n = 3
+
+
+moment_k &lt;- function(k, r, n, a, b) {
+    integrand &lt;- function(x) x^k * fr_n(x, r, n, a, b)
+    moment &lt;- integrate(integrand, a, b)$value
+    moment
+}
+
+# Expectation of x,y
+exp_xy &lt;- function(n, a, b) {
+  integrand &lt;- function(x) {
+    f_y &lt;- function(y) x * y * n * (n - 1) * (y - x)
+    integrate(Vectorize(f_y), lower = x, upper = b)$value
+  }
+  
+  result &lt;- integrate(Vectorize(integrand), lower = a, upper = b)$value
+  result
+}
+
+
+
+
+mean_x1_n = moment_k(1, r=1, n, a, b)
+mean_xn_n = moment_k(1, r=n, n, a, b)
+
+var_x1_n = moment_k(2, r=1, n, a, b) - mean_x1_n^2
+var_xn_n = moment_k(2, r=n, n, a, b) - mean_xn_n^2
+
+mean_x1_n</code></pre>
+<pre><code>## [1] 0.25</code></pre>
+<pre class="r"><code>mean_xn_n</code></pre>
+<pre><code>## [1] 0.75</code></pre>
+<pre class="r"><code>var_x1_n</code></pre>
+<pre><code>## [1] 0.0375</code></pre>
+<pre class="r"><code>var_xn_n</code></pre>
+<pre><code>## [1] 0.0375</code></pre>
+<pre class="r"><code>cov_order = exp_xy(n, a, b) - (mean_x1_n * mean_xn_n)
+
+cov_order</code></pre>
+<pre><code>## [1] 0.0125</code></pre>
+<pre class="r"><code>mean_sample_range &lt;- (mean_xn_n - mean_x1_n)
+var_sample_range &lt;- (var_x1_n + var_xn_n - 2*cov_order)
+
+cat(&quot;Mean of sample range:&quot;, mean_sample_range, &quot;\n&quot;)</code></pre>
+<pre><code>## Mean of sample range: 0.5</code></pre>
+<pre class="r"><code>cat(&quot;Variance of sample range:&quot;, var_sample_range)</code></pre>
+<pre><code>## Variance of sample range: 0.05</code></pre>
+</div>
 
 
 
