@@ -1,0 +1,452 @@
+---
+title: "Question Solving Version 2.0"
+author: "Ashik E Elahi"
+date: "2024-03-14"
+output: word_document
+---
+
+
+### Sampling Distribution and Order Statistics
+
+**Binomial Distribution**
+
+```{r}
+set.seed(11)
+par(mfrow=c(1, 3))
+n = c(9, 9, 9) # size
+p = c(0.55, 0.35, 0.4) # Probability
+color = c("red", "green", "blue")
+for(i in 1:3) {
+ x = rbinom(1000, n[i], p[i])
+ hist(x, col=color[i], main = paste("Histogram with n =", n[i], "and p=", p[i]))
+}
+```
+
+
+**Poisson Distribution**
+
+```{r}
+set.seed(12)
+par(mfrow=c(1,3))
+p <- c(3,5,9)
+color <- c("red", "green", "blue")
+for(i in 1:3) {
+ x = rpois(1000, p[i])
+ hist(x, col=color[i], main=paste("Poisson with lemda =", p[i]))
+}
+```
+
+
+
+**Problem: 1 - Suppose X follows a normal distribution with mean $\mu$ and variance $\sigma^2$.**
+
+**(i) Plot the distributions on a graph paper separately with ($\mu = 3, \sigma^2 = 16), (\mu = 5, \sigma^2 = 16)$, and ($\mu = 4, \sigma^2 = 16$) and compare the graphs.**
+
+**(ii) Plot the distributions on same graph paper with ($\mu = 4, \sigma^2 = 4), (\mu = 4, \sigma^2 = 9)$, and ($\mu = 4, \sigma^2 = 16)$**
+
+#### Solution 1 (i):
+
+```{r}
+set.seed(21)
+par(mfrow=c(1, 3))
+
+mu = c(3, 5, 4)
+sigma = c(4, 4, 4)
+colors = c("red", "green", "blue")
+labels = paste0("N(", mu, ",", sigma, ")")
+
+x = seq(-20, 20, length.out=1000)
+
+for(i in 1:length(mu)) {    # length(mu) = 3
+  fx <- dnorm(x, mean= mu[i], sd = sigma[i])
+  plot(x, fx, type = "l", main = labels[i], col=colors[i], lwd=3,
+       xlab = "X ->", ylab = "Frequency f(x)")
+  
+  segments(x0=mu[i], x1=mu[i], y=0, y1 = max(fx), lwd=2, lty=3)
+}
+
+```
+
+#### Solution 1 (ii):
+```{r}
+set.seed(21)
+par(mfrow=c(1, 1))
+
+mu = c(4, 4, 4)
+sigma = c(2, 3, 4)
+colors = c("red", "green", "blue")
+labels = paste0("N(", mu, ",", sigma, ")")
+
+x = seq(-20, 20, length.out=1000)
+
+for(i in 1:length(mu)) {
+  fx <- dnorm(x, mean= mu[i], sd = sigma[i])
+  if(i==1) {
+    plot(x, fx, type = "l", main = "Normal Distribution with different means", col=colors[i], lwd=3,
+       xlab = "X ->", ylab = "Frequency f(x)")
+  } else {
+    lines(x, fx, col=colors[i], lwd=3)
+  }
+}
+abline(v=mu[1], lty=3) 
+
+legend("topleft", inset = 0.05, title = "Distribution", labels, lty = 1, lwd=3, col = colors)
+
+```
+
+**Problem 2: Generate 1200 random samples of size n = 12 with $\mu = 4$ and $\sigma^2 = 9$. Suppose $s^2=\frac{1}{n-1}\sum_i^n (x_i - \bar{x})^2$. Using sitable graph, justify that $\frac{(n-1)s^2}{\sigma^2}$ follows a chi-square distribution with (n-1) degress of freedom.**
+
+### Method: 01
+
+```{r}
+set.seed(11)
+n = 12
+mu = 4
+sigma = 3
+it = 1200
+
+xvar = array()
+for(i in 1:it) {
+  x = rnorm(n, mu, sigma)
+  xvar[i] = var(x) # list of variances 
+}
+
+equation <- expression(frac((n-1)*s^2,sigma^2))
+
+test_statistic = ((n-1)*xvar)/sigma^2 
+hist(test_statistic, breaks = 15, freq = F, col="gray",  xlab = equation, main="Chi-square distribution")
+
+x2 = seq(0, 120, 0.01) 
+chisq_pdf = dchisq(x2, df=n-1)
+lines(x2, chisq_pdf, col="blue", lwd=3)
+
+legend("topright", inset = 0.1, title = "Distribution of Test Statistic", c("Chi Square", equation), fill = c("gray", "blue"), bty = "n")
+```
+
+### Method: 02
+
+```{r}
+set.seed(11)
+n = 12
+mu = 2
+sigma = sqrt(9)
+
+samples <- replicate(1200, rnorm(n, mu, sigma))
+
+test_statistic <- (n-1)*(apply(samples, 2, var)/sigma^2)
+
+hist(test_statistic, breaks = 25, probability = TRUE,
+     main = "Distribution of Test Statistic", 
+     xlab="Test Statistic",
+     ylab = "Density")
+
+x <- seq(0, max(test_statistic)+5, length.out = 100)
+
+lines(x, dchisq(x, df=n-1), col="blue", lwd=3)
+
+legend("topright", inset = 0.1, title = "Distribution of Test Statistic", c("Chi Square", equation), fill = c("gray", "blue"), bty = "n")
+```
+
+**Problem 3: A random sample of size 4 is drawn from a population that has a uniform distribution on the interval (0, 5). The resulting order statistics are $X_{1:4}, X_{2:4}, X_{3:4}$ and $X_{4:4}$. Determine the cumulative distribution function (CDF) of the $3^{rd}$ order statistics $(X_{3:4})$ and plot the CDF of the $3^{rd}$ order statistic. Evaluate the probability $P[X_{3:4} \ge 2]$**
+
+
+```{r}
+a = 0
+b = 5
+x = seq(a, b, length.out=1000)
+
+# pdf_unif = expression(1/(b-a))
+# eval(pdf_unif)
+
+Fr_n_value = function(x, r, n, a, b) {
+  # pdf_unif = dunif(x, a, b)
+  cdf_unif = punif(x, a, b)
+  sum_value = 0
+  
+  for(j in r:n) {
+    sum_value = sum_value + choose(n, j)*(cdf_unif^j)*(1-cdf_unif)^(n-j)
+  }
+  
+  return(sum_value)
+}
+
+Fr_n_eqn = function(r, n) {
+  sum_eqn <- array()
+  for(j in r:n) {
+    term <- paste0("(", n, "C", j, ") F(x)^", j, " [1-F(x)]^", (n-j))
+    sum_eqn[j-r+1] = term 
+  }
+  # print(sum_eqn)
+  return(paste0(sum_eqn, collapse ="+"))
+}
+
+# Results 
+r <- 3
+n <- 4
+a <- 0
+b <- 5
+x <- seq(a, b, length.out=100)
+Fr_n_values <- Fr_n_value(x, r, n, a, b)
+Fr_n_eqn(r, n)
+plot(x, Fr_n_values, main="CDF of Order Statistics",  type="l", xlab = "x ->", ylab = "Cumulative Frequency")
+
+# P(x_3:4 > 2)
+x_threshold <- 2
+p_x3_gt_x <- 1 - Fr_n_value(x_threshold, r, n, a, b)
+p_x3_gt_x
+```
+
+
+**Problem 4: A random sample of size 7 is drawn from a population that has a uniform distribution on the interval (0, 5). The resulting order statistics are $X_{1:7}, X_{2:7}, X_{3:7}, X_{4:7}, X_{5:7}, X_{6:7}$ and $X_{7:7}$. Determine the PDF, mean and variance of $4^{th}$ order (median) statistic. Also find mean and variance of smallest and largest order statistics**
+
+```{r}
+fr_n = function(x, r, n, a, b) {
+  pdf_x <- dunif(x, min=a, max=b)
+  cdf_x <- punif(x, min=a, max=b)
+  
+  numerator <- factorial(n) / (factorial(r-1)*factorial(n-r))
+  prob_dis <- numerator * cdf_x^(r-1) * (1 - cdf_x)^(n-r) * pdf_x
+  
+  return(prob_dis)
+}
+
+moment_k <- function(k, r, n, a, b) {
+  integrand <- function(x) x^k * fr_n(x, r, n, a, b)
+  moment <- integrate(integrand, a, b)$value
+  
+  return(moment)
+}
+a = 0
+b = 5
+n = 7
+# median, r = 4
+r = n %% 2
+x = seq(a, b, length.out = 100)
+
+mean_median <- moment_k(k=1, r, n, a, b)
+var_median <- moment_k(k=2, r, n, a, b) - mean_median^2
+
+cat("Mean of median order statistics:", mean_median, "\n")
+cat("Variance of median order statistics:", var_median, "\n")
+
+plot(x, fr_n(x, r, n, a, b), type = "l")
+
+mean_x1_n = moment_k(k=1, r=1, n, a, b)
+var_x1_n = moment_k(k=2, r=1, n, a, b) - mean_x1_n^2
+
+mean_xn_n = moment_k(k=1, r=n, n, a, b)
+var_xn_n = moment_k(k=2, r=n, n, a, b) - mean_xn_n^2
+
+cat("Smallest order statistics: mean =", mean_x1_n, "and variance =", var_x1_n, "\n")
+cat("Largest order statistics: mean =", mean_xn_n, "and variance =", var_xn_n, "\n")
+```
+
+
+**Problem 5: Suppose $X_{1:7} < X_{2:7} < X_{3:7} < X_{4:7} < X_{5:7} < X_{6:7} < X_{7:7}$ denote the order statistics based on a random sample of size 7 from the distribution having probability density function (pdf) $f(x) = \frac{1}{10}; 0 \le x \le 10$. Evaluate the mean and variance of the $5^{th}$ order statistic $(X_{5:7})$ and plot the CDF of the $5^{th}$ order statistic.**
+
+```{r}
+fr_n = function(x, r, n, a, b) {
+  pdf_x <- dunif(x, min=a, max=b)
+  cdf_x <- punif(x, min=a, max=b)
+  
+  numerator <- factorial(n) / (factorial(r-1)*factorial(n-r))
+  prob_dis <- numerator * cdf_x^(r-1) * (1 - cdf_x)^(n-r) * pdf_x
+  
+  return(prob_dis)
+}
+
+moment_k <- function(k, r, n, a, b) {
+  integrand <- function(x) x^k * fr_n(x, r, n, a, b)
+  moment <- integrate(integrand, a, b)$value
+  
+  return(moment)
+}
+a = 0
+b = 10
+r = 5
+n = 7
+x = seq(a, b, length.out = 100)
+
+mean_x5 <- moment_k(k=1, r, n, a, b)
+var_x5 <- moment_k(k=2, r, n, a, b) - mean_x5^2
+
+cat("Mean of X_{(5)}:", mean_x5, "\n")
+cat("Variance of X_{(5)}:", var_x5, "\n")
+ 
+Fr_n_values <- array()
+for(i in 1:100) {
+  Fr_n_values[i] = integrate(fr_n, a, x[i], r=r, n=n, a=a, b=b)$value
+}
+
+plot(x, Fr_n_values, type = "l", xlab = "x->", ylab=paste0("F", r, ":", n, "(x)"))
+```
+
+
+**Problem 6: A random sample of size 3 is drawn from a population that has a uniform distribution on the interval (0, 1). The resulting order statistics are $X_{1:3}, X_{2:3}$ and $X_{3:3}$. Determine the mean and variance of smallest and largest order statistic.**
+
+### Method 1:
+
+***kth raw moment of rth order statistics of uniform distribution on the interval [0, 1] is $\mu_{r:n}^{(k)} = \frac{n!\cdot (k+r-1)!}{(r-1)! \cdot (k+n)!}$ ***
+
+```{r}
+rm_unif_r_n <- function(k, r, n) {
+  result <- (factorial(n)*factorial(k+r-1))/(factorial(r-1)*factorial(k+3))
+  return(result)
+}
+
+n = 3
+mean_x1_3 = rm_unif_r_n(k=1, r=1, n)
+var_x1_3 = rm_unif_r_n(k=2, r=1, n) - mean_x1_3^2
+
+mean_x3_3 = rm_unif_r_n(k=1, r=3, n)
+var_x3_3 = rm_unif_r_n(k=2, r=3, n) - mean_x3_3^2
+
+cat("Smallest order statistics: mean =", mean_x1_3, "and variance =", var_x1_3, "\n")
+cat("Largest order statistics: mean =", mean_x3_3, "and variance =", var_x3_3, "\n")
+```
+
+### Method 2:
+
+```{r}
+fr_n = function(x, r, n, a, b) {
+  pdf_x <- dunif(x, a, b)
+  cdf_x <- punif(x, a, b)
+  
+  numerator <- factorial(n) / (factorial(r-1)*factorial(n-r))
+  prob_dis <- numerator * cdf_x^(r-1) * (1-cdf_x)^(n-r) * pdf_x
+  
+  return(prob_dis)
+}
+
+moment_k <- function(k, r, n, a, b) {
+  integrand <- function(x) x^k * fr_n(x, r, n, a, b)
+  moment <- integrate(integrand, a, b)$value
+  return(moment)
+}
+
+a = 0
+b = 1
+n = 3
+
+colors = c("red", "blue")
+
+x <- seq(a, b, length.out = 100)
+mean_x1_3 = moment_k(k=1, r=1, n, a, b) 
+var_x1_3 = moment_k(k=2, r=1, n, a, b) - mean_x1_3^2 
+mean_x3_3 = moment_k(k=1, r=3, n, a, b) 
+var_x3_3 = moment_k(k=2, r=3, n, a, b) - mean_x3_3^2
+
+cat("Smallest order statistics: mean =", mean_x1_3, "and variance =", var_x1_3, "\n")
+cat("Largest order statistics: mean =", mean_x3_3, "and variance =", var_x3_3, "\n")
+
+
+plot(x, fr_n(x, r=1, n, a, b), type = "l", col=colors[1], lwd=3, main = "PDF of Order Statistics", xlab = "X->", ylab = "fr:n")
+lines(x, fr_n(x, r=3, n, a, b), col = colors[2], lwd=3)
+
+legend("right", inset = 0.01, title = "PDF", c("f1:3(x)", "f3:3(x)"), lty=1, lwd=3, col=colors)
+```
+
+
+**Problem 7: A random sample of size 3 is drawn from a population that has a uniform distribution on the interval (0, 1). The resulting order statistics are $X_{1:3}, X_{2:3}, X_{3:3}$. Determine the mean and variance of sample range.**
+
+```{r}
+fr_n = function(x, r, n, a, b) {
+  pdf_x = dunif(x, min=a, max=b)
+  cdf_x = punif(x, min=a, max=b)
+  
+  numerator <- factorial(n) / (factorial(r-1)*factorial(n-r))
+  prob_dist <- numerator * cdf_x^(r-1) * (1 - cdf_x)^(n-r)*pdf_x
+  
+  return(prob_dist)
+}
+
+a = 0
+b = 1
+n = 3
+x = seq(0, 1, length.out=100)
+
+moment_k <- function(k, r, n, a, b) {
+  integrand <- function(x) x^k * fr_n(x, r, n, a, b)
+  moment <- integrate(integrand, a, b)$value
+  return(moment)
+}
+
+exp_xy <- function(n, a, b) {
+  integrand <- function(x) {
+    f_y <- function(y) n*(n-1)*x*y*(y-x)
+    # integration from x to b (dependent range)
+    integrate(Vectorize(f_y), x, b)$value  
+  }
+  
+  # integration from a to b
+  result <- integrate(Vectorize(integrand), a, b)$value
+  return(result)
+}
+
+mean_x1_n = moment_k(k=1, r=1, n, a, b)
+var_x1_n = moment_k(k=2, r=1, n, a, b) - mean_x1_n^2
+
+mean_xn_n = moment_k(k=1, r=n, n, a, b)
+var_xn_n = moment_k(k=2, r=n, n, a, b) - mean_xn_n^2
+
+cat("Smallest order statistics: mean =", mean_x1_n, "and variance =", var_x1_n, "\n")
+cat("Largest order statistics: mean =", mean_xn_n, "and variance =", var_xn_n, "\n")
+
+cov_order = exp_xy(n, a, b) - (mean_x1_n * mean_xn_n)
+
+cat("Covariance of smallest and largest order statistics =", cov_order, "\n")
+
+mean_sample_range = (mean_xn_n - mean_x1_n)
+var_sample_range = var_x1_n + var_xn_n - 2*cov_order
+
+cat("Mean of sample range:", mean_sample_range, "\n")
+cat("Variance of sample range:", var_sample_range, "\n")
+
+
+
+```
+
+
+**Problem 8: The random sample $X_1, X_2, ..., X_9$ of size 9 is drawn from a population that has a uniform distribution with the interval (0, 10). Evaluate the mean and variance of 7th order statistic. Also find the value of $P(X_{7} > 2)$**
+
+```{r}
+fr_n = function(x, r, n, a, b) {
+  pdf_x <- dunif(x, a, b)
+  cdf_x <- punif(x, a, b)
+  
+  numerator <- factorial(n) / (factorial(r-1)*factorial(n-r))
+  prob_dis <- numerator * cdf_x^(r-1) * (1-cdf_x)^(n-r) * pdf_x
+  
+  return(prob_dis)
+}
+
+a <- 0
+b <- 10
+n <- 9
+r <- 7
+
+x <- seq(a, b, length.out=100)
+
+fr_n_values <- sapply(x, fr_n, r=r, n=n, a=a, b=b)
+
+plot(x, fr_n_values, type = "l", xlab = "x->", 
+     ylab = paste0("f", r, ":", n, "(x)"), 
+     main = paste0("Probability Density Function of X", r, ":", n))
+
+moment_k <- function(k, r, n, a, b) {
+    integrand <- function(x) x^k * fr_n(x, r, n, a, b)
+    moment <- integrate(integrand, a, b)$value
+    moment
+}
+
+mean_x7 <- moment_k(1, r, n, a, b)
+var_x7 <- moment_k(2, r, n, a, b) - mean_x7^2
+
+cat("Mean of X_{(7)}:", mean_x7, "\n")
+cat("Variance of X_{(7)}:", var_x7, "\n")
+
+# int 2 to 10
+p_x7_gt_2 <- integrate(fr_n, 2, b, r=r, n=n, a=a, b=b)$value
+cat("P(X_{(7)} > 2):", p_x7_gt_2, "\n")
+```
+
