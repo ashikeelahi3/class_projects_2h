@@ -408,8 +408,8 @@ a*c + abs(c-b)</code></pre>
 5 &amp; 6 &amp; 7 &amp; 8\\
 9 &amp; 10 &amp; 11 &amp; 12
 \end{bmatrix}
-\]</span> Also find (a) row sum, (b) column sum, and (c) the element (2,
-3) position.</p>
+\]</span> Also find (a) row sum, (b) column sum, and (c) the element in
+(2, 3) position.</p>
 <pre class="r"><code># (i) Removing element from data vector
 x &lt;- c(20, 13, 14, 25, 16, 20, 10, 9, 23, 35, 70, 12, 15, 13, 10)
 x &lt;- x[-11]
@@ -649,6 +649,10 @@ root_2 = calc_root2(x=-4, tolerance)
 
 cat(&quot;The roots are&quot;, round(root_1, 2), &quot;and&quot;, round(root_2, 2), &quot;\n&quot;)</code></pre>
 <pre><code>## The roots are 1.83 and -3.83</code></pre>
+<pre class="r"><code># (iii)
+fact &lt;- function(n) ifelse(n == 0, 1, prod(1:n))
+fact(23)</code></pre>
+<pre><code>## [1] 2.585202e+22</code></pre>
 <pre class="r"><code># (iv) Compute coefficient of variance
 y &lt;- c(5, 6, 2, 8, 5, 9, 2, 4, 8, 3, 1, 9)
 
