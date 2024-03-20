@@ -22,7 +22,7 @@ a = 5; b = 15; c = 10
 # (i)
 (a+b)/c
 # (ii)
-(-b+sqrt(b^2 - 4*a*c)/ (2*a))
+(-b+sqrt(b^2 - 4*a*c))/ (2*a)
 # (iii)
 a*c + abs(c-b)
 # (iv)
@@ -45,7 +45,7 @@ $$
 5 & 6 & 7 & 8\\
 9 & 10 & 11 & 12
 \end{bmatrix}
-$$ Also find (a) row sum, (b) column sum, and (c) the element (2, 3) position.
+$$ Also find (a) row sum, (b) column sum, and (c) the element in (2, 3) position.
 
 ```{r}
 # (i) Removing element from data vector
@@ -216,6 +216,10 @@ root_2 = calc_root2(x=-4, tolerance)
 
 cat("The roots are", round(root_1, 2), "and", round(root_2, 2), "\n")
 
+# (iii)
+fact <- function(n) ifelse(n == 0, 1, prod(1:n))
+fact(23)
+
 # (iv) Compute coefficient of variance
 y <- c(5, 6, 2, 8, 5, 9, 2, 4, 8, 3, 1, 9)
 
@@ -259,6 +263,14 @@ lines(Water.Temp, fitted(fit2))
 
 
 
-
+x<-c(20,13,14,25,16,20,10,9,23,35,70,12,15,13,10)
+x <-x[-11]
+y<-c(1,15,1)
+y<-1:15
+z<-c(1,24,2)
+A = matrix(1:12, nrow=3, byrow=T)
+rowSums(A)
+colSums(A)
+A[2,3]
 
 
