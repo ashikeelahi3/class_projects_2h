@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
 * {
     margin: 0;
     padding: 0;
@@ -36,12 +38,12 @@ header {
     color: rgb(211, 14, 106);
 }
 
-#main {
+/* #main {
     background-image: url("images/main_img.jpg");
     height: calc(100vh - 55px);
     background-size: cover;
     background-position: center;
-}
+} */
 
 .hamburger {
     display: none;
@@ -86,5 +88,48 @@ header {
         font-size: 24px;
         color: #fff;
         transition: color 0.3s;
+    }
+}
+
+        
+body {
+    overflow: hidden;
+}
+
+#eid_section {
+    font-family: 'Poppins', sans-serif; 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: #222;
+    overflow: hidden;
+}
+
+h2 {
+    color: #333;
+    font-size: 5em;
+    user-select: none;
+    text-align: center;
+}
+
+i {
+    position: absolute;
+    background: #fff;
+    pointer-events: none;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: eid_spark 2s ease-out forwards;
+}
+@keyframes eid_spark {
+    0% {
+        opacity: 1;
+        transform: translate(-50%, -50%);
+    }
+
+    100% {
+        opacity: 0;
+        transform: translate(var(--randomX), var(--randomY));
     }
 }
